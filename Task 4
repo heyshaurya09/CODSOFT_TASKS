@@ -1,0 +1,113 @@
+# ==========================================
+# TASK 4 - CUSTOMER DATA ANALYSIS
+# ==========================================
+
+# Import Libraries
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Load Dataset
+df = pd.read_csv("Mall_Customers.csv")
+
+# Display Dataset
+print("First 5 Records")
+print(df.head())
+
+# Dataset Information
+print("\nDataset Information")
+print(df.info())
+
+# Check Missing Values
+print("\nMissing Values")
+print(df.isnull().sum())
+
+# Summary Statistics
+print("\nSummary Statistics")
+print(df.describe())
+
+# ---------------------------------------------------
+# Customer Analysis
+# ---------------------------------------------------
+
+# Average Spending Score by Gender
+print("\nAverage Spending Score by Gender")
+print(df.groupby("Genre")["Spending Score (1-100)"].mean())
+
+# Average Income by Gender
+print("\nAverage Income by Gender")
+print(df.groupby("Genre")["Annual Income (k$)"].mean())
+
+# High Value Customers
+high_value = df[df["Spending Score (1-100)"] >= 70]
+
+print("\nHigh Value Customers")
+print(high_value)
+
+# Save High Value Customers
+high_value.to_csv("High_Value_Customers.csv", index=False)
+
+# ---------------------------------------------------
+# Data Visualization
+# ---------------------------------------------------
+
+# Age Distribution
+plt.figure(figsize=(6,4))
+plt.hist(df["Age"], bins=10)
+plt.title("Age Distribution")
+plt.xlabel("Age")
+plt.ylabel("Number of Customers")
+plt.show()
+
+# Gender Distribution
+plt.figure(figsize=(5,4))
+df["Genre"].value_counts().plot(kind="bar")
+plt.title("Gender Distribution")
+plt.xlabel("Gender")
+plt.ylabel("Count")
+plt.show()
+
+# Income vs Spending Score
+plt.figure(figsize=(6,5))
+plt.scatter(df["Annual Income (k$)"],
+            df["Spending Score (1-100)"])
+
+plt.title("Income vs Spending Score")
+plt.xlabel("Annual Income (k$)")
+plt.ylabel("Spending Score")
+plt.show()
+
+# Average Spending by Gender
+df.groupby("Genre")["Spending Score (1-100)"].mean().plot(kind="bar")
+
+plt.title("Average Spending Score by Gender")
+plt.xlabel("Gender")
+plt.ylabel("Average Spending Score")
+plt.show()
+
+# ---------------------------------------------------
+# Customer Segmentation
+# ---------------------------------------------------
+
+young = df[df["Age"] < 30]
+
+middle = df[(df["Age"] >= 30) & (df["Age"] < 50)]
+
+senior = df[df["Age"] >= 50]
+
+print("\nYoung Customers :", len(young))
+print("Middle Age Customers :", len(middle))
+print("Senior Customers :", len(senior))
+
+# ---------------------------------------------------
+# Marketing Suggestions
+# ---------------------------------------------------
+
+print("\nMARKETING STRATEGIES")
+
+print("1. Reward high spending customers with loyalty offers.")
+print("2. Give discounts to low spending customers.")
+print("3. Advertise fashion products to young customers.")
+print("4. Promote premium products to high income customers.")
+print("5. Provide membership benefits for regular customers.")
+
+print("\nTask 4 Completed Successfully")
