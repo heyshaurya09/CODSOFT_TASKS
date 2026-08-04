@@ -1,0 +1,137 @@
+# ==========================================
+# TASK 5 - WEB DATA EXTRACTION & ANALYSIS
+# ==========================================
+
+# Import Required Libraries
+import requests
+from bs4 import BeautifulSoup
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Website URL
+url = "https://books.toscrape.com/"
+
+# Send Request to Website
+response = requests.get(url)
+
+# Check Website Status
+if response.status_code == 200:
+    print("Website Connected Successfully")
+else:
+    print("Failed to Connect")
+
+# Parse HTML
+soup = BeautifulSoup(response.text, "html.parser")
+
+# Find All Books
+books = soup.find_all("article", class_="product_pod")
+
+# Create Empty Lists
+book_name = []
+price = []
+rating = []
+
+# Extract Data
+for book in books:
+
+    # Book Title
+    title = book.h3.a["title"]
+    book_name.append(title)
+
+    # Book Price
+    book_price = book.find("p", class_="price_color").text
+    price.append(book_price)
+
+    # Book Rating
+    book_rating = book.find("p")["class"][1]
+    rating.append(book_rating)
+
+# Create DataFrame
+df = pd.DataFrame({
+    "Book Name": book_name,
+    "Price": price,
+    "Rating": rating
+})
+
+# Display First Five Records
+print("\nFirst Five Records")
+print(df.head())
+
+# Dataset Information
+print("\nDataset Information")
+print(df.info())
+
+# Check Missing Values
+print("\nMissing Values")
+print(df.isnull().sum())
+
+# Display Number of Books
+print("\nTotal Books Collected:", len(df))
+
+# Rating Count
+print("\nRating Distribution")
+print(df["Rating"].value_counts())
+
+# Save Dataset
+df.to_csv("Books_Data.csv", index=False)
+
+print("\nDataset Saved Successfully as Books_Data.csv")
+
+# -------------------------------
+# Data Visualization
+# -------------------------------
+
+# Graph 1 - Rating Distribution
+plt.figure(figsize=(6,4))
+
+df["Rating"].value_counts().plot(kind="bar")
+
+plt.title("Book Rating Distribution")
+plt.xlabel("Rating")
+plt.ylabel("Number of Books")
+
+plt.show()
+
+# Graph 2 - Top 10 Book Prices
+# Remove Currency Symbol
+
+df["Price"] = df["Price"].str.replace("£", "", regex=False)
+
+df["Price"] = df["Price"].astype(float)
+
+top_books = df.sort_values("Price", ascending=False).head(10)
+
+plt.figure(figsize=(10,5))
+
+plt.bar(top_books["Book Name"], top_books["Price"])
+
+plt.title("Top 10 Most Expensive Books")
+plt.xlabel("Book Name")
+plt.ylabel("Price (£)")
+
+plt.xticks(rotation=90)
+
+plt.show()
+
+# -------------------------------
+# Basic Analysis
+# -------------------------------
+
+print("\nAverage Book Price:", round(df["Price"].mean(), 2))
+
+print("Highest Book Price:", df["Price"].max())
+
+print("Lowest Book Price:", df["Price"].min())
+
+# -------------------------------
+# Conclusion
+# -------------------------------
+
+print("\nConclusion")
+print("1. Successfully extracted book information from the website.")
+print("2. Organized the data into a structured dataset.")
+print("3. Performed basic data analysis.")
+print("4. Created visualizations to understand ratings and prices.")
+print("5. Exported the final dataset to a CSV file.")
+
+print("\nTask 5 Completed Successfully.")
